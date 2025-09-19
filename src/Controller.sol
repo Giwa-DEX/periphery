@@ -6,16 +6,16 @@ import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC2
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import {ILocker} from "v2-core/interfaces/ILocker.sol";
-import {IBookManager} from "v2-core/interfaces/IBookManager.sol";
-import {IERC721Permit} from "v2-core/interfaces/IERC721Permit.sol";
-import {Math} from "v2-core/libraries/Math.sol";
-import {BookId, BookIdLibrary} from "v2-core/libraries/BookId.sol";
-import {OrderId, OrderIdLibrary} from "v2-core/libraries/OrderId.sol";
-import {Currency, CurrencyLibrary} from "v2-core/libraries/Currency.sol";
-import {FeePolicy, FeePolicyLibrary} from "v2-core/libraries/FeePolicy.sol";
-import {Tick, TickLibrary} from "v2-core/libraries/Tick.sol";
-import {OrderId, OrderIdLibrary} from "v2-core/libraries/OrderId.sol";
+import {ILocker} from "core/interfaces/ILocker.sol";
+import {IBookManager} from "core/interfaces/IBookManager.sol";
+import {IERC721Permit} from "core/interfaces/IERC721Permit.sol";
+import {Math} from "core/libraries/Math.sol";
+import {BookId, BookIdLibrary} from "core/libraries/BookId.sol";
+import {OrderId, OrderIdLibrary} from "core/libraries/OrderId.sol";
+import {Currency, CurrencyLibrary} from "core/libraries/Currency.sol";
+import {FeePolicy, FeePolicyLibrary} from "core/libraries/FeePolicy.sol";
+import {Tick, TickLibrary} from "core/libraries/Tick.sol";
+import {OrderId, OrderIdLibrary} from "core/libraries/OrderId.sol";
 
 import {IController} from "./interfaces/IController.sol";
 import {ReentrancyGuard} from "./libraries/ReentrancyGuard.sol";
@@ -429,11 +429,11 @@ contract Controller is IController, ILocker, ReentrancyGuard {
             }
             currencyDelta = bookManager.getCurrencyDelta(address(this), currency);
             if (currencyDelta > 0) {
-                bookManager.withdraw(Currency.wrap(tokensToSettle[i]), user, uint256(currencyDelta));
+                bookManager.withdraw(currency, user, uint256(currencyDelta));
             }
             uint256 balance = IERC20(tokensToSettle[i]).balanceOf(address(this));
             if (balance > 0) {
-                IERC20(tokensToSettle[i]).transfer(user, balance);
+                currency.transfer(user, balance);
             }
         }
         if (address(this).balance > 0) native.transfer(user, address(this).balance);
